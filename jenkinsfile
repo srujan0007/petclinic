@@ -1,0 +1,24 @@
+node('master') {
+	stage('checkout'){
+  		git 'https://github.com/srujan0007/petclinic.git'
+	}
+
+	stage('build'){
+  		M3_HOME = tool 'M3.6'
+		sh "$M3_HOME/bin/mvn clean package"
+	}
+
+	stage('archival'){
+		archiveArtifacts artifacts: 'target/*.?ar', followSymlinks:false
+	}
+
+	stage('unit tests'){
+		junit 'target/surefire-reports/*.xml'
+	}
+	notify('success')
+}
+def notify(status){
+	emailext body: "$status - jenkins job", 
+		subject: "$status", 
+		to: 'saicharan.arra1999@gmail.com'
+}
